@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>xuan & Yuan 靈魂拷問</title>
+    <style>
+        :root {
+            /* 神秘紫黑色系，呼應魔法陣與深夜話題 */
+            --bg-color: #1a1a2e;
+            --card-bg: #16213e;
+            --primary-color: #e94560;
+            --text-color: #e0e0e0;
+            --accent-color: #0f3460;
+            --success: #00b894;
+            --error: #d63031;
+        }
+
+        body {
+            font-family: "Microsoft JhengHei", sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-image: radial-gradient(circle at 10% 20%, rgba(233, 69, 96, 0.1) 0%, transparent 20%),
+                              radial-gradient(circle at 90% 80%, rgba(15, 52, 96, 0.1) 0%, transparent 20%);
+        }
+
+        .container {
+            background: rgba(22, 33, 62, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 0 40px rgba(0,0,0,0.5);
+            width: 100%;
+            max-width: 600px;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 5px;
+            font-size: 2rem;
+            text-shadow: 0 0 10px rgba(233, 69, 96, 0.5);
+        }
+
+        .subtitle {
+            color: #8a8a8a;
+            font-size: 0.9rem;
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, var(--primary-color), #c72c41);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(233, 69, 96, 0.4);
+            margin: 10px;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(233, 69, 96, 0.6);
+        }
+
+        /* Quiz Styles */
+        #quiz-container { display: none; text-align: left; }
+
+        .question-text {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 25px;
+            line-height: 1.5;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .options { display: flex; flex-direction: column; gap: 15px; }
+
+        .option-btn {
+            background-color: var(--accent-color);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 16px;
+            border-radius: 12px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1rem;
+            color: #ccc;
+            position: relative;
+        }
+
+        .option-btn:hover {
+            background-color: #1a4a80;
+            color: white;
+            transform: translateX(5px);
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background-color: #0f3460;
+            border-radius: 3px;
+            margin-bottom: 30px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary-color);
+            width: 0%;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px var(--primary-color);
+        }
+
+        /* Result Styles */
+        #result-container { display: none; }
+
+        .score-circle {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin: 20px auto;
+            border: 4px solid var(--primary-color);
+            background: radial-gradient(circle, var(--accent-color) 0%, transparent 70%);
+            box-shadow: 0 0 20px var(--primary-color);
+        }
+
+        .footer {
+            margin-top: 30px;
+            font-size: 0.8rem;
+            color: #555;
+        }
+
+        .fade-in { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container fade-in" id="start-screen">
+        <h1>🔮 靈魂拷問 🔮</h1>
+        <p class="subtitle">xuan & Yuan 的崩潰日常</p>
+        <p>從好吃的飯糰到半夜的蟑螂驚魂記<br>還要測驗你對「魔法陣」與「人性」的理解！</p>
+        <button class="btn" onclick="startQuiz()">進入魔法陣</button>
+    </div>
+
+    <div class="container" id="quiz-container">
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress"></div>
+        </div>
+        <div id="question-box"></div>
+    </div>
+
+    <div class="container" id="result-container">
+        <h1>測驗結果</h1>
+        <div class="score-circle" id="score-display">0</div>
+        <p id="result-message" style="font-weight: bold; font-size: 1.2rem; margin-bottom: 30px; line-height: 1.6;"></p>
+        <button class="btn" onclick="copyResult()">複製結果去嗆人</button>
+        <button class="btn" style="background: #555;" onclick="location.reload()">再玩一次</button>
+        <div class="footer">截圖傳給 xuan 證明你是真朋友</div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                q: "1. 2024年9月，Yuan 吃到哪個食物原本「瞧不起不想點」，結果一吃驚為天人，甚至想連續去吃？",
+                options: ["學校自助餐", "某家飯糰", "7-11微波便當", "路邊攤蔥油餅"],
+                answer: 1 // 飯糰
+            },
+            {
+                q: "2. 關於那個好吃的食物，Yuan 給出的評價是？",
+                options: ["這是我來這吃到目前最好吃的", "普普通通啦", "難吃死了", "比我媽煮的好吃"],
+                answer: 0 // 目前覺得最好吃
+            },
+            {
+                q: "3. 【驚悚題】2024年11月，Yuan 半夜睡覺時發生了什麼慘劇，導致她大尖叫？",
+                options: ["鬼壓床", "夢到被當", "蟑螂爬過脖子", "地震"],
+                answer: 2 // 蟑螂爬脖子
+            },
+            {
+                q: "4. 承上題，Xuan 聽到這件事的反應是？",
+                options: ["好噁喔我會哭", "哈哈哈哈活該", "沒事啦我也遇過", "你要不要搬家"],
+                answer: 0 // 好噁
+            },
+            {
+                q: "5. 【設計題】Yuan 傳了一個「六芒星」的設計圖，Xuan 吐槽說看起來像什麼？",
+                options: ["猶太教", "魔法陣 / 邪教", "披薩", "忍者手裡劍"],
+                answer: 1 // 魔法陣
+            },
+            {
+                q: "6. 【人性題】Yuan 的男友曾說信仰第一，但 Yuan 吐槽說後來發生了什麼事？",
+                options: ["他還是吃了供品", "我們還是做了(那檔事)", "他去拜媽祖", "他退教了"],
+                answer: 1 // 還是做了
+            },
+            {
+                q: "7. 承上題，Yuan 對於這件事得出的「千古名言」是？",
+                options: ["上帝愛世人", "男人終究是男人", "愛情是盲目的", "我魅力無法擋"],
+                answer: 1 // 男人終究是男人
+            },
+            {
+                q: "8. Xuan 提到她要回去當「區長」了，並稱呼 Yuan 為？",
+                options: ["副區長", "平民百姓", "抗議人士", "異教徒"],
+                answer: 2 // 抗議人士
+            },
+            {
+                q: "9. 2024年11月，Yuan 為了感謝 Xuan (或是遲到賠罪)，請她喝了什麼？",
+                options: ["星巴克", "五桐號 (WooTEA)", "可不可", "白開水"],
+                answer: 1 // 五桐號
+            },
+            {
+                q: "10. 當 Xuan 邀請 Yuan 去教會看看時，她說以前不敢邀是因為怕什麼？",
+                options: ["怕你覺得無聊", "怕你前男友覺得我搶約會時間", "怕你睡著", "怕你來踢館"],
+                answer: 1 // 怕前男友覺得搶時間
+            },
+            {
+                q: "11. Yuan 抱怨她的 Adobe Photoshop 怎麼了？",
+                options: ["太貴了買不起", "AI 死掉了/當機", "功能太少", "介面太醜"],
+                answer: 1 // AI死掉了
+            },
+            {
+                q: "12. 關於設計圖，Yuan 說她把線條調細之後，原本像魔法陣，現在變像什麼？",
+                options: ["更像魔法陣", "像精品", "像符咒", "像蚊香"],
+                answer: 0 // 還是魔法陣(邪教感)
+            },
+            {
+                q: "13. 聊天記錄中，Xuan 說傳統信仰跟基督教最大差別是？",
+                options: ["能不能吃豬肉", "世界觀不一樣(信仰擺第一)", "教堂比較漂亮", "禱告方式不同"],
+                answer: 1 // 信仰擺第一
+            },
+            {
+                q: "14. 2024年10月，Xuan 傳了一個「老人與狗」的連結，說那隻狗怎樣？",
+                options: ["很可愛", "長得很像你", "很像她自己", "很像某個明星"],
+                answer: 1 // 長得很像你 (根據上下文推測的損友互動，通常是這樣) - *更正：根據文本是Yuan傳圖說Xuan像狗，或Xuan傳圖。這裡設為趣味題* -> 修正為文本提到的：Yuan 說「長得好像你」
+            },
+            {
+                q: "15. 【送分題】這兩個人聊天的風格是？",
+                options: ["相敬如賓", "互相傷害與吐槽", "極度客套", "只有公事"],
+                answer: 1 // 互相傷害
+            }
+        ];
+
+        // 修正第14題邏輯，改為確認文本內容
+        questions[13] = {
+            q: "14. Yuan 曾傳了一張圖片說「長得好像你」，通常這時候是在？",
+            options: ["稱讚對方漂亮", "互嗆/損友日常", "認錯人了", "真心告白"],
+            answer: 1
+        };
+
+
+        let currentQuestion = 0;
+        let score = 0;
+        const totalScore = 100;
+        const pointsPerQuestion = Math.round(100 / questions.length);
+
+        function startQuiz() {
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('quiz-container').style.display = 'block';
+            document.getElementById('quiz-container').classList.add('fade-in');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            if (currentQuestion >= questions.length) {
+                showResult();
+                return;
+            }
+
+            const qData = questions[currentQuestion];
+            const progressPercent = ((currentQuestion) / questions.length) * 100;
+            document.getElementById('progress').style.width = progressPercent + '%';
+
+            let html = `
+                <div class="fade-in">
+                    <div class="question-text">${qData.q}</div>
+                    <div class="options">
+                        ${qData.options.map((opt, index) => 
+                            `<div class="option-btn" onclick="checkAnswer(${index})">${opt}</div>`
+                        ).join('')}
+                    </div>
+                </div>
+            `;
+            document.getElementById('question-box').innerHTML = html;
+        }
+
+        function checkAnswer(selectedIndex) {
+            const correctIndex = questions[currentQuestion].answer;
+            const options = document.querySelectorAll('.option-btn');
+            
+            options.forEach(btn => btn.onclick = null); // Lock
+
+            if (selectedIndex === correctIndex) {
+                options[selectedIndex].style.backgroundColor = '#00b894'; // Success Green
+                options[selectedIndex].style.color = 'white';
+                options[selectedIndex].innerHTML += ' (賓果！)';
+                score += pointsPerQuestion;
+            } else {
+                options[selectedIndex].style.backgroundColor = '#d63031'; // Error Red
+                options[selectedIndex].style.color = 'white';
+                options[selectedIndex].innerHTML += ' (錯啦！)';
+                // Show correct
+                options[correctIndex].style.backgroundColor = 'rgba(0, 184, 148, 0.3)';
+                options[correctIndex].style.border = '1px solid #00b894';
+            }
+
+            if (currentQuestion === questions.length - 1 && score > 98) score = 100;
+
+            currentQuestion++;
+            setTimeout(loadQuestion, 1200);
+        }
+
+        function showResult() {
+            document.getElementById('quiz-container').style.display = 'none';
+            document.getElementById('result-container').style.display = 'block';
+            document.getElementById('result-container').classList.add('fade-in');
+            
+            let displayScore = 0;
+            const scoreInterval = setInterval(() => {
+                if (displayScore >= score) {
+                    clearInterval(scoreInterval);
+                    displayScore = score;
+                }
+                document.getElementById('score-display').innerText = displayScore;
+                displayScore++;
+            }, 20);
+
+            let msg = "";
+            if (score === 100) msg = "太強了！你是住在我們床底下嗎？<br>連蟑螂都知道！🪳";
+            else if (score >= 80) msg = "真愛無誤！<br>看來你很懂「男人終究是男人」這句話！🤣";
+            else if (score >= 60) msg = "及格邊緣！<br>是不是沒把我們放在眼裡？😒";
+            else msg = "太爛了！<br>你是不是比較想去參加邪教？🧙‍♀️";
+
+            document.getElementById('result-message').innerHTML = msg;
+        }
+
+        function copyResult() {
+            const cleanMsg = document.getElementById('result-message').innerText;
+            const text = `我在「xuan & Yuan 靈魂拷問」獲得了 ${score} 分！\n${cleanMsg}\n快來挑戰看你多懂我們！`;
+            navigator.clipboard.writeText(text).then(() => {
+                alert("成績已複製！快去嗆朋友！");
+            }).catch(() => {
+                alert("複製失敗，請截圖");
+            });
+        }
+    </script>
+</body>
+</html>
